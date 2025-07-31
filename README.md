@@ -1,6 +1,6 @@
 # Tab'd Native Host
 
-A Go-based native messaging host for the Tab'd browser extension. This program receives clipboard data from the browser extension and saves it to files in the user's home directory to be picked up by the VS Code extension.
+A Go-based native messaging host for the [Tab'd browser extension](https://github.com/iann0036/tabd-extension). This program receives clipboard data from the browser extension and saves it to files in the user's home directory to be picked up by the [VS Code extension](https://github.com/iann0036/tabd).
 
 ## Installation
 
