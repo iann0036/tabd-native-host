@@ -5,7 +5,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOST_NAME="com.tabd.vscode"
+HOST_NAME="com.iann0036.tabd"
 BINARY_NAME="tabd-native-host"
 
 echo "Installing Tab'd Native Host..."
