@@ -29,8 +29,9 @@ type Response struct {
 
 // TabdNativeHost handles native messaging communication
 type TabdNativeHost struct {
-	tabdDir string
-	logFile *os.File
+	tabdDir       string
+	logFile       *os.File
+	secureStorage SecureStorage
 }
 
 // NewTabdNativeHost creates a new native host instance
@@ -67,8 +68,9 @@ func NewTabdNativeHost() (*TabdNativeHost, error) {
 	}
 
 	return &TabdNativeHost{
-		tabdDir: tabdDir,
-		logFile: logFile,
+		tabdDir:       tabdDir,
+		logFile:       logFile,
+		secureStorage: NewSecureStorage(tabdDir),
 	}, nil
 }
 
@@ -120,24 +122,33 @@ func (t *TabdNativeHost) sendMessage(message []byte) error {
 	return nil
 }
 
-// saveClipboardData saves clipboard data to the latest file in ~/.tabd/
+// saveClipboardData saves clipboard data to secure storage
 func (t *TabdNativeHost) saveClipboardData(data *ClipboardData) error {
-	// Only save to the latest file
-	latestPath := filepath.Join(t.tabdDir, "latest_clipboard.json")
-	latestFile, err := os.Create(latestPath)
+	// Convert to JSON
+	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("failed to create latest clipboard file: %v", err)
-	}
-	defer latestFile.Close()
-
-	// Write JSON data
-	encoder := json.NewEncoder(latestFile)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(data); err != nil {
-		return fmt.Errorf("failed to encode clipboard data: %v", err)
+		return fmt.Errorf("failed to marshal clipboard data: %v", err)
 	}
 
-	return nil
+	// Store in secure storage
+	return t.secureStorage.Store("latest_clipboard", jsonData)
+}
+
+// getClipboardData retrieves clipboard data from secure storage
+func (t *TabdNativeHost) getClipboardData() (*ClipboardData, error) {
+	// Retrieve from secure storage
+	jsonData, err := t.secureStorage.Retrieve("latest_clipboard")
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve clipboard data: %v", err)
+	}
+
+	// Parse JSON
+	var data ClipboardData
+	if err := json.Unmarshal(jsonData, &data); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal clipboard data: %v", err)
+	}
+
+	return &data, nil
 }
 
 // handleMessage processes incoming messages from the browser extension
@@ -148,7 +159,7 @@ func (t *TabdNativeHost) handleMessage(messageData []byte) error {
 		return fmt.Errorf("failed to parse message: %v", err)
 	}
 
-	// Save to file
+	// Save to secure storage
 	if err := t.saveClipboardData(&data); err != nil {
 		log.Printf("Error saving clipboard data: %v", err)
 
@@ -204,7 +215,34 @@ func (t *TabdNativeHost) run() error {
 }
 
 func main() {
-	// Create native host
+	// Check if this is a getclipboard command
+	if len(os.Args) > 1 && os.Args[1] == "getclipboard" {
+		// Handle getclipboard command
+		host, err := NewTabdNativeHost()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to create native host: %v\n", err)
+			os.Exit(1)
+		}
+		defer host.Close()
+
+		// Retrieve clipboard data
+		data, err := host.getClipboardData()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to retrieve clipboard data: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Output as JSON
+		encoder := json.NewEncoder(os.Stdout)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(data); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to encode clipboard data: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	// Create native host for native messaging
 	host, err := NewTabdNativeHost()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create native host: %v\n", err)
