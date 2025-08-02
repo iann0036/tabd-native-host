@@ -1,10 +1,10 @@
 # Tab'd Native Host
 
-A Go-based native messaging host for the [Tab'd browser extension](https://github.com/iann0036/tabd-extension). This program receives clipboard data from the browser extension and saves it to files in the user's home directory to be picked up by the [VS Code extension](https://github.com/iann0036/tabd).
+A Go-based native messaging host for the [Tab'd browser extension](https://github.com/iann0036/tabd-extension). This program receives clipboard data from the browser extension and saves it to files in the user's home directory to be picked up by the [IDE extension](https://github.com/iann0036/tabd).
 
 ## Installation
 
-Pre-build binaries are packaged with the VS Code extension, and can be installed by running the `Tab'd: Install browser helper`` command from the Command Palette in VS Code. However, if you want to build it yourself or install it manually, follow the instructions below.
+Pre-build binaries are packaged with the IDE extension, and can be installed by running the `Tab'd: Install browser helper`` command from the Command Palette in your IDE. However, if you want to build it yourself or install it manually, follow the instructions below.
 
 ### Quick Install (Recommended)
 
