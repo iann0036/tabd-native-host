@@ -4,6 +4,8 @@ A Go-based native messaging host for the [Tab'd browser extension](https://githu
 
 ## Installation
 
+Pre-build binaries are packaged with the VS Code extension, and can be installed by running the `Tab'd: Install browser helper`` command from the Command Palette in VS Code. However, if you want to build it yourself or install it manually, follow the instructions below.
+
 ### Quick Install (Recommended)
 
 ```bash
