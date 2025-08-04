@@ -34,9 +34,10 @@ type EncryptedFileStorage struct {
 // NewSecureStorage creates the appropriate secure storage for the platform
 func NewSecureStorage(tabdDir string) SecureStorage {
 	// Try keyring first (works on macOS, Windows, and most Linux distros)
-	if supportsKeyring() {
+	// TODO: Fix, broken
+	/*if supportsKeyring() {
 		return &KeyringStorage{serviceName: "tabd-native-host"}
-	}
+	}*/
 
 	// Fallback to encrypted file storage
 	passphrase := generateOrRetrievePassphrase(tabdDir)
