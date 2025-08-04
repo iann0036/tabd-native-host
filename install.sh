@@ -54,7 +54,7 @@ MANIFEST_CONTENT="{
   \"path\": \"$INSTALL_DIR/$BINARY_NAME\",
   \"type\": \"stdio\",
   \"allowed_origins\": [
-    \"chrome-extension://cnlfbljdfomffoofkilepnahcakenkcc/\"
+    \"chrome-extension://lemjjpeploikbpmkodmmkdjcjodboidn/\"
   ]
 }"
 
